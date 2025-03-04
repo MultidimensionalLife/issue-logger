@@ -28,6 +28,17 @@ export interface SharedData {
     [key: string]: unknown;
 }
 
+export interface GithubIssues {
+    issues: Array<{
+        id: string;
+        number: number;
+        title: string;
+        created_at: string;
+        body: string;
+    }>;
+    [key: string]: unknown;
+}
+
 export interface User {
     id: number;
     name: string;
