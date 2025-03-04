@@ -35,7 +35,9 @@ class HandleInertiaRequests extends Middleware
     }
     private function get_issues()
     {
-        return $this->curl_github('https://api.github.com/repos/MultidimensionalLife/sample-issues/issues?assignee='.$this->get_current_github_username().'&state=open');
+        $username = $this->get_current_github_username();
+
+        return $this->curl_github('https://api.github.com/repos/'.$username.'/sample-issues/issues?assignee='.$username.'&state=open');
     }
 
     private function curl_github($url) {
