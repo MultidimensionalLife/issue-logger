@@ -27,6 +27,30 @@ class HandleInertiaRequests extends Middleware
         return parent::version($request);
     }
 
+    private function get_current_github_username(): string
+    {
+        $output = $this->curl_github('https://api.github.com/user');
+
+        return $output->login;
+    }
+    private function get_issues()
+    {
+        return $this->curl_github('https://api.github.com/repos/MultidimensionalLife/sample-issues/issues?assignee='.$this->get_current_github_username().'&state=open');
+    }
+
+    private function curl_github($url) {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: sample-issue', 'Authorization: token '.env('GITHUB_PERSONAL_TOKEN')));
+
+
+        $output = curl_exec($ch);
+
+        curl_close($ch);
+
+        return json_decode($output);
+    }
+
     /**
      * Define the props that are shared by default.
      *
@@ -38,10 +62,11 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
-            'quote' => ['message' => trim($message), 'author' => trim($author)],
+            'quote' => ['message' => $this->get_issues(), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
             ],
